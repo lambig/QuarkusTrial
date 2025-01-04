@@ -4,17 +4,23 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.matchesPattern;
 
 @QuarkusTest
 class GreetingResourceTest {
     @Test
     void testHelloEndpoint() {
         given()
-          .when().get("/hello")
-          .then()
-             .statusCode(200)
-             .body(is("Hello from Quarkus REST"));
+                .when().get("/hello")
+                .then()
+                .statusCode(200)
+                .body(allOf(
+                        matchesPattern("\\d+"),  // 1つ以上の数字のみ
+                        not(startsWith("-"))     // 負の数ではない
+                ));
     }
 
 }
