@@ -9,9 +9,16 @@ devcontainer.jsonがあるのでそれ使って好きなIDEでコンテナ開い
 quarkus dev
 ```
 とタイプしてください。出てくるメッセージは0.0.0.0:8080に誘導しますが`無視`して  
-localhost:8080/hello にアクセスすると実装済みのコントローラがレスポンスを返します。
+localhost:8080/hello にアクセスすると実装済みのコントローラがレスポンスを返します。  
+意図的に重くしてあるので注意
 
 localhost:8080 に直接アクセスすると開発用のDevUIが開きます。
+
+### Native buildは？
+```
+quarkus build --native
+```
+でどうぞ。出力したビルドはgradleのtestNativeでUTできます。
 
 ### DevUI開いたときに例外出るけど？
 Quarkus側のバグらしっす。次のLTS(3.20.0 今は3.17.5を設定してます)で直したいねとの由。  

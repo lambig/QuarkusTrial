@@ -1,6 +1,7 @@
 package io.github.lambig;
 
 
+import io.github.lambig.textescape.TextEscape;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.GET;
@@ -8,6 +9,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -27,6 +29,7 @@ public class GreetingResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> hello() {
+
         return Multi.createFrom().range(1, 1_000_000)
                 .onItem().transformToUniAndMerge(i ->
                         asyncUniOf(() -> tuple2(i, random.nextInt(10))).onFailure().recoverWithItem(tuple2(i, 0))
@@ -38,8 +41,23 @@ public class GreetingResource {
                     return rand;
                 })).onFailure().recoverWithItem(0))  // 要素ごとにデフォルトしないとMultiが止まる
                 .collect().with(Collectors.summingInt(i -> i))
-                // 結果を整形
-                .map(String::valueOf);
+                .map(sum ->
+                {
+                    Runtime runtime = Runtime.getRuntime();
+                    return TextEscape.escape("""
+                                    計算結果: ${sum}
+                                    メモリ使用量 (バイト): ${usage}
+                                    現在のヒープサイズ (バイト): ${currentHeap}
+                                    最大ヒープサイズ (バイト): ${maxHeap}
+                                    """)
+                            .where(Map.of(
+                                    "sum", sum,
+                                    "usage", runtime.totalMemory() - runtime.freeMemory(),
+                                    "currentHeap", runtime.totalMemory(),
+                                    "maxHeap", runtime.maxMemory()
+                            ))
+                            .compile();
+                });
     }
 
     public static <E> Uni<E> asyncUniOf(Supplier<E> supplier) {
