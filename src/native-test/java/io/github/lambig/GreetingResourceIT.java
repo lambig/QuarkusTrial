@@ -12,6 +12,7 @@ class GreetingResourceIT extends GreetingResourceTest {
     // Execute the same tests but in packaged mode.
     @Test
     void testGreeting() {
+        long startTime = System.nanoTime();
         given()
                 .when().get("/hello")
                 .then()
@@ -20,5 +21,7 @@ class GreetingResourceIT extends GreetingResourceTest {
                         matchesPattern("\\d+"),  // 1つ以上の数字のみ
                         not(startsWith("-"))     // 負の数ではない
                 ));
+        long endTime = System.nanoTime();
+        System.out.println("#### Test Execution time: " + (endTime - startTime) / 1_000_000 + " ms ####");
     }
 }

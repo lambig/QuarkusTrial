@@ -12,7 +12,8 @@ import static org.hamcrest.Matchers.matchesPattern;
 @QuarkusTest
 class GreetingResourceTest {
     @Test
-    void testHelloEndpoint() {
+    void testGreeting() {
+        long startTime = System.nanoTime();
         given()
                 .when().get("/hello")
                 .then()
@@ -21,6 +22,7 @@ class GreetingResourceTest {
                         matchesPattern("\\d+"),  // 1つ以上の数字のみ
                         not(startsWith("-"))     // 負の数ではない
                 ));
+        long endTime = System.nanoTime();
+        System.out.println("#### Test Execution time: " + (endTime - startTime) / 1_000_000 + " ms ####");
     }
-
 }
