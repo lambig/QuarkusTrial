@@ -5,8 +5,4 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusIntegrationTest
 class GreetingResourceIT extends GreetingResourceTest {
-    @Test
-    void testGreeting() {
-        super.testGreeting(); // 要らないはずだけど書いとかないと出力が出ない
-    }
 }
