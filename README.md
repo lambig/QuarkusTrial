@@ -41,6 +41,8 @@ You can run your application in dev mode that enables live coding using:
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
+The JVM and dev-container images use Java 21 to match the compilation target. Rebuild changed images with `docker build` or the dev-container rebuild command. JVM options can be supplied through `JAVA_TOOL_OPTIONS`. The dev container supplies Corretto instead of a local GraalVM installation; use the container-based native build command below for native executables.
+
 ## Packaging and running the application
 
 The application can be packaged using:
