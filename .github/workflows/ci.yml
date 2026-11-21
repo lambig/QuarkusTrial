@@ -38,3 +38,17 @@ jobs:
             **/build/reports/tests/test/**
           if-no-files-found: error
           retention-days: 14
+      - name: Build Java 21 runtime and development images
+        run: |
+          docker build -f src/main/docker/Dockerfile.jvm -t quarkus-ci .
+          docker run -d --name quarkus-ci -p 127.0.0.1:8080:8080 quarkus-ci
+          curl --fail --retry 30 --retry-connrefused --retry-delay 2 http://127.0.0.1:8080/hello
+          docker rm -f quarkus-ci
+          bash ./gradlew --no-daemon --console=plain '-Dquarkus.package.jar.type=legacy-jar' quarkusBuild
+          docker build -f src/main/docker/Dockerfile.legacy-jar -t quarkus-legacy-ci .
+          docker run -d --name quarkus-legacy-ci -p 127.0.0.1:8080:8080 quarkus-legacy-ci
+          curl --fail --retry 30 --retry-connrefused --retry-delay 2 http://127.0.0.1:8080/hello
+          docker rm -f quarkus-legacy-ci
+          docker build -f .devcontainer/Dockerfile -t quarkus-dev-ci .devcontainer
+          docker run --rm quarkus-dev-ci java -version
+          docker run --rm quarkus-dev-ci pebble help
